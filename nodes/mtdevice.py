@@ -209,7 +209,17 @@ class MTDevice(object):
 
     def GoToConfig(self):
         """Place MT device in configuration mode."""
-        self.write_ack(MID.GoToConfig)
+        # self.write_ack(MID.GoToConfig)
+        # self.state = DeviceState.Config
+        for n in range(60):
+            try:
+                self.write_ack(MID.GoToConfig, n_retries=10)
+                break
+            except:
+                print "Failed to configure XSens IMU. Retrying. " + str(n)
+        else:
+            raise MTException("Failed to put MT Device in configuration mode after 60 tries.")
+
         self.state = DeviceState.Config
 
     def GoToMeasurement(self):
